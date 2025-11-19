@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OmniMongo Icon Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #10B981; }
+        canvas {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            margin: 20px 0;
+            background: white;
+        }
+        button {
+            background: #10B981;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #059669;
+        }
+        .preview {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        .size-label {
+            color: #6b7280;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍃 OmniMongo Icon Generator</h1>
+        <p>Preview and download the app icon in different sizes:</p>
+        
+        <div class="preview" id="preview"></div>
+        
+        <div>
+            <button onclick="downloadPNG(512)">Download 512x512 PNG</button>
+            <button onclick="downloadPNG(256)">Download 256x256 PNG</button>
+            <button onclick="downloadICO()">Download Multi-size ICO</button>
+        </div>
+        
+        <p style="margin-top: 30px; color: #6b7280; font-size: 14px;">
+            <strong>Instructions:</strong><br>
+            1. Download the PNG files for macOS/Linux<br>
+            2. For Windows ICO, use an online converter like 
+            <a href="https://convertio.co/png-ico/" target="_blank">convertio.co</a> with the 512x512 PNG<br>
+            3. Save the ICO file to <code>public/icon.ico</code>
+        </p>
+    </div>
+
+    <script>
+        const sizes = [16, 32, 48, 64, 128, 256, 512];
+        
+        function createIcon(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#10B981');
+            gradient.addColorStop(1, '#059669');
+            
+            // Rounded rectangle
+            const radius = size * 0.2;
+            ctx.beginPath();
+            ctx.roundRect(0, 0, size, size, radius);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            
+            // MongoDB leaf
+            const centerX = size / 2;
+            const centerY = size / 2;
+            const leafHeight = size * 0.625;
+            const leafWidth = size * 0.117;
+            
+            ctx.fillStyle = '#34D399';
+            ctx.beginPath();
+            ctx.moveTo(centerX - leafWidth, centerY - leafHeight * 0.5);
+            ctx.quadraticCurveTo(centerX - leafWidth * 2, centerY - leafHeight * 0.25, 
+                                centerX - leafWidth * 1.5, centerY);
+            ctx.quadraticCurveTo(centerX - leafWidth, centerY + leafHeight * 0.25,
+                                centerX - leafWidth, centerY + leafHeight * 0.5);
+            ctx.lineTo(centerX + leafWidth, centerY + leafHeight * 0.5);
+            ctx.quadraticCurveTo(centerX + leafWidth, centerY + leafHeight * 0.25,
+                                centerX + leafWidth * 1.5, centerY);
+            ctx.quadraticCurveTo(centerX + leafWidth * 2, centerY - leafHeight * 0.25,
+                                centerX + leafWidth, centerY - leafHeight * 0.5);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Stem
+            ctx.fillStyle = '#047857';
+            ctx.fillRect(centerX - leafWidth * 0.5, centerY + leafHeight * 0.47, 
+                        leafWidth, leafHeight * 0.094);
+            
+            // Connection dots (only for larger sizes)
+            if (size >= 128) {
+                ctx.fillStyle = 'rgba(236, 253, 245, 0.8)';
+                const dotSize = size * 0.023;
+                const dotOffset = size * 0.25;
+                
+                [[dotOffset, dotOffset], [size - dotOffset, dotOffset],
+                 [dotOffset, size - dotOffset], [size - dotOffset, size - dotOffset]].forEach(([x, y]) => {
+                    ctx.beginPath();
+                    ctx.arc(x, y, dotSize, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+            
+            return canvas;
+        }
+        
+        // Generate previews
+        const previewDiv = document.getElementById('preview');
+        [512, 256, 128, 64].forEach(size => {
+            const canvas = createIcon(size);
+            canvas.style.width = '128px';
+            canvas.style.height = '128px';
+            
+            const wrapper = document.createElement('div');
+            wrapper.appendChild(canvas);
+            const label = document.createElement('div');
+            label.className = 'size-label';
+            label.textContent = `${size}x${size}`;
+            wrapper.appendChild(label);
+            
+            previewDiv.appendChild(wrapper);
+        });
+        
+        function downloadPNG(size) {
+            const canvas = createIcon(size);
+            canvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `omnimongo-icon-${size}x${size}.png`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        }
+        
+        function downloadICO() {
+            alert('Please download the 512x512 PNG and use an online converter like convertio.co to create the ICO file.\n\nSave it as public/icon.ico in your project.');
+            downloadPNG(512);
+        }
+    </script>
+</body>
+</html>

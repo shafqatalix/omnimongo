@@ -1,0 +1,112 @@
+{
+  "name": "onmimongo",
+  "version": "0.0.1",
+  "description": "MongoDB desktop utility app",
+  "homepage": "https://github.com/shafqatalix/omnimongo/blob/main/README.md",
+  "bugs": {
+    "url": "https://github.com/shafqatalix/omnimongo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/shafqatalix/omnimongo.git"
+  },
+  "license": "CC BY-NC-SA 4.0",
+  "author": "shafqatalix",
+  "type": "module",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "electron:dev": "vite --mode development",
+    "electron:build": "tsc && vite build",
+    "purge": "npx rimraf dist dist-electron node_modules",
+    "postbuild-clean": "npx rimraf release/win-unpacked release/builder-debug.yml release/builder-effective-config.yaml",
+    "dist": "npm run build && electron-builder && npm run postbuild-clean",
+    "dist:win": "npm run build && electron-builder --win",
+    "dist:mac": "npm run build && electron-builder --mac"
+  },
+  "build": {
+    "appId": "com.omnimongo.app",
+    "productName": "OmniMongo App",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "public/icon.ico"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ],
+      "category": "public.app-category.developer-tools",
+      "icon": "public/icon.icns",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "artifactName": "OmniMongoApp-${version}-${arch}.${ext}"
+    },
+    "dmg": {
+      "title": "OmniMongo App",
+      "icon": "public/icon.icns",
+      "background": null,
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "portable": {
+      "artifactName": "OmniMongoApp-${version}.exe"
+    },
+    "nsis": {
+      "oneClick": false
+    },
+    "compression": "normal"
+  },
+  "dependencies": {
+    "kerberos": "^7.0.0",
+    "mongodb": "^7.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "virtual-react-json-diff": "^1.0.15"
+  },
+  "devDependencies": {
+    "@types/mongodb": "^4.0.7",
+    "@types/node": "^20.10.5",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "@vitejs/plugin-react": "^4.2.1",
+    "electron": "^39.1.2",
+    "electron-builder": "^24.13.3",
+    "rimraf": "^6.1.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "vite-plugin-electron": "^0.28.2",
+    "vite-plugin-electron-renderer": "^0.14.5"
+  }
+}
