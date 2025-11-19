@@ -21,10 +21,11 @@
     "electron:dev": "vite --mode development",
     "electron:build": "tsc && vite build",
     "purge": "npx rimraf dist dist-electron node_modules",
-    "postbuild-clean": "npx rimraf release/win-unpacked release/builder-debug.yml release/builder-effective-config.yaml",
+    "postbuild-clean": "npx rimraf release/*-unpacked release/*.yml release/*.yaml",
     "dist": "npm run build && electron-builder && npm run postbuild-clean",
-    "dist:win": "npm run build && electron-builder --win",
-    "dist:mac": "npm run build && electron-builder --mac"
+    "dist:win": "npm run build && electron-builder --win && npm run postbuild-clean",
+    "dist:mac": "npm run build && electron-builder --mac && npm run postbuild-clean ",
+    "dist:linux": "npm run build && electron-builder --linux && npm run postbuild-clean"
   },
   "build": {
     "appId": "com.omnimongo.app",
@@ -47,6 +48,19 @@
         }
       ],
       "icon": "public/icon.ico"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "category": "Development",
+      "icon": "public/icon.png",
+      "artifactName": "OmniMongoApp-${version}-${arch}.${ext}"
     },
     "mac": {
       "target": [
